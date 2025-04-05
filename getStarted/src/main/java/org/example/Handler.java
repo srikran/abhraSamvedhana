@@ -41,8 +41,7 @@ public class Handler {
         System.out.println("Upload complete");
         System.out.printf("%n");
 
-      //  cleanUp(s3Client, bucket, key);
-
+        cleanUp(s3Client, bucket, key);
         System.out.println("Closing the connection to {S3}");
         s3Client.close();
         System.out.println("Connection closed");
