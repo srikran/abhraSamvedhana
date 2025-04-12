@@ -1,0 +1,37 @@
+package org.vaidushyam;
+
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
+import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
+
+public class ListObjects {
+    public static void main(String[] args) {
+
+    ProfileCredentialsProvider credentialsProvider = ProfileCredentialsProvider.create();
+    Region region = Region.US_EAST_1;
+    S3Client s3client = S3Client.builder()
+            .credentialsProvider(credentialsProvider)
+            .region(region)
+            .build();
+    String bucketName = System.getenv("MY_BUCKET_NAME");
+
+    printObjects(s3client, buildRequest(bucketName));
+
+}
+
+    private static void printObjects(S3Client s3client, ListObjectsV2Request request) {
+        ListObjectsV2Iterable objects = s3client.listObjectsV2Paginator(request);
+
+        objects.stream().flatMap(r->r.contents().stream())
+            .forEach(content -> System.out.println("Key :" + content.key()));
+    }
+
+    private static ListObjectsV2Request buildRequest(String bucketName) {
+        return ListObjectsV2Request.builder()
+                .bucket(bucketName).maxKeys(1)
+                .build();
+    }
+}
+
